@@ -45,11 +45,13 @@ dependencies {
 shadowJar {
     archiveClassifier = 'fat'
     archiveBaseName = 'websox'
+    archiveVersion = ''
     manifest {
         attributes 'Main-Class': ''
-        attributes 'Main-Verticle': 'org.rainday.BootstrapVerticle'
+        attributes 'Main-Verticle': 'org.rainday.WebsoxServer'
     }
     mergeServiceFiles {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
     }
 }
+shadowJar.mustRunAfter clean
