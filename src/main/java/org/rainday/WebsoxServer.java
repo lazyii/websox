@@ -34,21 +34,26 @@ public class WebsoxServer extends AbstractVerticle {
     @Override
     public void start() throws Exception {
 
-        super.start();
-        String aa = System.getenv("PORT");
-        String bb = System.getProperty("server.port");
-        String cc = System.getProperty("PORT");
-        System.out.println(aa + "----" + bb + "------" + cc);
-        System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
-        logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
+        try {
+            super.start();
+            String aa = System.getenv("PORT");
+            String bb = System.getProperty("server.port");
+            String cc = System.getProperty("PORT");
+            System.out.println(aa + "----" + bb + "------" + cc);
+            System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
+            logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
 
-        username = config().getString("username", username);
-        password = config().getString("password", password);
-        port = Integer.valueOf(System.getProperty("server.port"));
-        
-        System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
-        logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
-        
+            username = config().getString("username", username);
+            password = config().getString("password", password);
+            port = Integer.valueOf(System.getProperty("server.port"));
+
+            System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
+            logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
         HttpServerOptions options = new HttpServerOptions()
                 .setWebsocketSubProtocols("protocol.loveyou3000.rainday.org")
                 .setPort(port);
