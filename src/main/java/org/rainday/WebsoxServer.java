@@ -38,8 +38,8 @@ public class WebsoxServer extends AbstractVerticle {
         password = config().getString("password", password);
         port = Integer.valueOf(System.getProperty("server.port"));
         
-        System.out.println(String.format("sout: username: %s, password: $s, port: $d", username, password, port));
-        logger.info(String.format("logger: username: %s, password: $s, port: $d", username, password, port));
+        System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
+        logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
         
         HttpServerOptions options = new HttpServerOptions()
                 .setWebsocketSubProtocols("protocol.loveyou3000.rainday.org")
