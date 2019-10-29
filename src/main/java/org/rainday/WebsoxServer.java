@@ -43,7 +43,7 @@ public class WebsoxServer extends AbstractVerticle {
         
         HttpServerOptions options = new HttpServerOptions()
                 .setWebsocketSubProtocols("protocol.loveyou3000.rainday.org")
-                .setPort(8080);
+                .setPort(port);
         HttpServer websocketServer = vertx.createHttpServer(options);
         websocketServer.requestHandler(x->{
             x.response().end("<html><body> hello world </body></html>");
