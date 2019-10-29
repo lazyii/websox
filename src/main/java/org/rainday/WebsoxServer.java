@@ -35,6 +35,10 @@ public class WebsoxServer extends AbstractVerticle {
     public void start() throws Exception {
 
         super.start();
+        String aa = System.getenv("PORT");
+        String bb = System.getProperty("server.port");
+        String cc = System.getProperty("PORT");
+        System.out.println(aa + "----" + bb + "------" + cc);
         System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
         logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
 
