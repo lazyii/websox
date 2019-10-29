@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar build/libs/websox-fat.jar
+web: java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/websox-fat.jar
