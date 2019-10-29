@@ -47,7 +47,7 @@ shadowJar {
     archiveBaseName = 'websox'
     archiveVersion = ''
     manifest {
-        attributes 'Main-Class': ''
+        attributes 'Main-Class': 'io.vertx.core.Launcher'
         attributes 'Main-Verticle': 'org.rainday.WebsoxServer'
     }
     mergeServiceFiles {
