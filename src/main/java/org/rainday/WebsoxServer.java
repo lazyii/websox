@@ -33,7 +33,11 @@ public class WebsoxServer extends AbstractVerticle {
     
     @Override
     public void start() throws Exception {
+
         super.start();
+        System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
+        logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
+
         username = config().getString("username", username);
         password = config().getString("password", password);
         port = Integer.valueOf(System.getProperty("server.port"));
