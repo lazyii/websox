@@ -1,0 +1,55 @@
+group 'org.rainday'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url 'https://mirrors.huaweicloud.com/repository/maven/' }
+//        maven { url 'http://mirrors.163.com/maven/repository/maven-central' }
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:5.0.0"
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        maven { url 'https://mirrors.huaweicloud.com/repository/maven/' }
+//        maven { url 'http://mirrors.163.com/maven/repository/maven-central' }
+        mavenCentral()
+        jcenter()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+// must behind plugins
+tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    compile 'io.vertx:vertx-core:3.8.3'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.8.3'
+}
+
+/*** tasks ***/
+/**
+ * 打包fatjar
+ * */
+shadowJar {
+    archiveClassifier = 'fat'
+    archiveBaseName = 'websox'
+    manifest {
+        attributes 'Main-Class': ''
+        attributes 'Main-Verticle': 'org.rainday.BootstrapVerticle'
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}
