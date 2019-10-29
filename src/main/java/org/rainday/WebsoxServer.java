@@ -29,10 +29,18 @@ public class WebsoxServer extends AbstractVerticle {
     
     private String username = "rainday";
     private String password = "raindayy";
+    private int port = 8080;
     
     @Override
     public void start() throws Exception {
         super.start();
+        username = config().getString("username", username);
+        password = config().getString("password", password);
+        port = Integer.valueOf(System.getProperty("server.port"));
+        
+        System.out.println(String.format("sout: username: %s, password: $s, port: $d", username, password, port));
+        logger.info(String.format("logger: username: %s, password: $s, port: $d", username, password, port));
+        
         HttpServerOptions options = new HttpServerOptions()
                 .setWebsocketSubProtocols("protocol.loveyou3000.rainday.org")
                 .setPort(8080);
