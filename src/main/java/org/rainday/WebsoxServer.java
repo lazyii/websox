@@ -37,6 +37,9 @@ public class WebsoxServer extends AbstractVerticle {
                 .setWebsocketSubProtocols("protocol.loveyou3000.rainday.org")
                 .setPort(8080);
         HttpServer websocketServer = vertx.createHttpServer(options);
+        websocketServer.requestHandler(x->{
+            x.response().end("<html><body> hello world </body></html>");
+        });
         websocketServer.websocketHandler(serverWebSocket -> {
             System.out.println("connected ,ssl:" + serverWebSocket.isSsl());
             boolean auth = this.authorize(serverWebSocket.headers());
