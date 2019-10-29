@@ -54,4 +54,4 @@ shadowJar {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
     }
 }
-shadowJar.mustRunAfter clean
+shadowJar.dependsOn(clean)
