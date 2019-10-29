@@ -1,1 +1,1 @@
-web: java -jar build/libs/websox-fat.jar
+web: java $JAVA_OPTS -Dhttp.port=$PORT -jar build/libs/websox-fat.jar
