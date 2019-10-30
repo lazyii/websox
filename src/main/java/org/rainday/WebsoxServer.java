@@ -31,25 +31,28 @@ public class WebsoxServer extends AbstractVerticle {
     
     private String username = "rainday";
     private String password = "raindayy";
-    private int    port     = 8080;
     private static Map config = new HashMap();
     
     @Override
     public void start() throws Exception {
-        
+        //只有PORT JAVA_OPTS等个别由dynos提供的变量可以使用system.getenv获取
+        //read http.port from system.property
+        int port = Integer.getInteger("http.port");
+    
         try {
-            
             config.put("a", String.format("sout: username: %s, password: %s, port: %d", username, password, port));
             config.put("configfun", config());
-            port = Integer.getInteger("http.port") == null ? 8089 : Integer.getInteger("http.port");
             config.put("b", String.format("sout: username: %s, password: %s, port: %d", username, password, port));
             config.put("c", System.getenv("PORT"));
-            config.put("d", System.getenv("PORT"));
+            config.put("d", System.getProperty("PORT"));
             config.put("kokoda", System.getProperty("KOKODA"));
-            
+            config.put("kokodaenv", System.getenv("KOKODA"));
+            config.put("koko", System.getProperty("KOKO"));
+    
             username = config().getString("username", username);
             password = config().getString("password", password);
-            
+    
+    
             System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
             logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
         } catch (Exception e) {
