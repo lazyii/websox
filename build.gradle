@@ -48,7 +48,7 @@ shadowJar {
     archiveVersion = ''
     manifest {
         attributes 'Main-Class': 'io.vertx.core.Launcher'
-        attributes 'Main-Verticle': 'org.rainday.HelloVerticle'
+        attributes 'Main-Verticle': 'org.rainday.WebsoxServer'
     }
     mergeServiceFiles {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
