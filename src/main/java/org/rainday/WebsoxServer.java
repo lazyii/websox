@@ -6,6 +6,7 @@ import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.Json;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetClient;
@@ -14,6 +15,8 @@ import io.vertx.core.net.NetSocket;
 import io.vertx.core.streams.Pump;
 
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by admin on 2019/10/29 9:17:57.
@@ -29,18 +32,23 @@ public class WebsoxServer extends AbstractVerticle {
     private String username = "rainday";
     private String password = "raindayy";
     private int    port     = 8080;
+    private static Map config = new HashMap();
     
     @Override
     public void start() throws Exception {
         
         try {
             
-            System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
-            logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
+            config.put("a", String.format("sout: username: %s, password: %s, port: %d", username, password, port));
+            config.put("configfun", config());
+            port = Integer.getInteger("http.port") == null ? 8089 : Integer.getInteger("http.port");
+            config.put("b", String.format("sout: username: %s, password: %s, port: %d", username, password, port));
+            config.put("c", System.getenv("PORT"));
+            config.put("d", System.getenv("PORT"));
+            config.put("kokoda", System.getProperty("KOKODA"));
             
             username = config().getString("username", username);
             password = config().getString("password", password);
-            port = Integer.getInteger("http.port") == null ? 8089 : Integer.getInteger("http.port");
             
             System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
             logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
@@ -53,7 +61,11 @@ public class WebsoxServer extends AbstractVerticle {
                                                            .setPort(port);
         HttpServer websocketServer = vertx.createHttpServer(options);
         websocketServer.requestHandler(x -> {
-            x.response().end("<html><body> hello world </body></html>");
+            if (x.path().equals("/")) {
+                x.response().end("<html><body> hello world </body></html>");
+            } else {
+                x.response().end(Json.encodePrettily(config));
+            }
         });
         websocketServer.websocketHandler(serverWebSocket -> {
             System.out.println("connected ,ssl:" + serverWebSocket.isSsl());
