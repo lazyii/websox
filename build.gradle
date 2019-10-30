@@ -54,5 +54,9 @@ shadowJar {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
     }
 }
-compileJava.dependsOn(clean)
 
+/** for heroku stage  */
+task stage() {
+    dependsOn clean, shadowJar
+}
+shadowJar.mustRunAfter clean
