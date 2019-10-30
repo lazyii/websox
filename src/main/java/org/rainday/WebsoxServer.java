@@ -19,38 +19,38 @@ import java.util.Base64;
  * Created by admin on 2019/10/29 9:17:57.
  */
 public class WebsoxServer extends AbstractVerticle {
-
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final Buffer tcp = Buffer.buffer(new byte[]{5, 1, 0});// ver|cmd|rsv|atyp|dst.addr|dst.port
-    private static final Buffer udp = Buffer.buffer(new byte[]{5, 3, 0});// ver|cmd|rsv|atyp|dst.addr|dst.port
-
-    private static final Buffer connectResponse = Buffer.buffer(new byte[]{5, 0, 0, 1, 0x7f, 0, 0, 1, 0x27, 0x10});
-    private static final Buffer errorResponse   = Buffer.buffer(new byte[]{5, 4, 0, 1, 0, 0, 0, 0, 0, 0});
-
+    
+    private Logger logger          = LoggerFactory.getLogger(this.getClass());
+    private Buffer tcp             = Buffer.buffer(new byte[]{5, 1, 0});// ver|cmd|rsv|atyp|dst.addr|dst.port
+    private Buffer udp             = Buffer.buffer(new byte[]{5, 3, 0});// ver|cmd|rsv|atyp|dst.addr|dst.port
+    private Buffer connectResponse = Buffer.buffer(new byte[]{5, 0, 0, 1, 0x7f, 0, 0, 1, 0x27, 0x10});
+    private Buffer errorResponse   = Buffer.buffer(new byte[]{5, 4, 0, 1, 0, 0, 0, 0, 0, 0});
+    
     private String username = "rainday";
     private String password = "raindayy";
     private int    port     = 8080;
-
+    
     @Override
     public void start() throws Exception {
-
+        
         try {
-
+            
             System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
             logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
-
+            
             username = config().getString("username", username);
             password = config().getString("password", password);
             port = Integer.getInteger("http.port") == null ? 8089 : Integer.getInteger("http.port");
-
+            
             System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
             logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
-
-        HttpServerOptions options = new HttpServerOptions().setWebsocketSubProtocols("protocol.loveyou3000.rainday.org").setPort(port);
+        
+        HttpServerOptions options = new HttpServerOptions().setWebsocketSubProtocols("protocol.loveyou3000.rainday.org")
+                                                           .setPort(port);
         HttpServer websocketServer = vertx.createHttpServer(options);
         websocketServer.requestHandler(x -> {
             x.response().end("<html><body> hello world </body></html>");
@@ -66,7 +66,7 @@ public class WebsoxServer extends AbstractVerticle {
                     promise.future().setHandler(r -> {
                         if (r.succeeded()) {
                             serverWebSocket.write(connectResponse);
-
+                            
                             NetSocket netSocket = r.result();
                             serverWebSocket.closeHandler(voad -> netSocket.close());
                             netSocket.closeHandler(voad -> serverWebSocket.close());
@@ -83,22 +83,24 @@ public class WebsoxServer extends AbstractVerticle {
                 serverWebSocket.reject(401);
             }
         });
-
+        
         websocketServer.listen();
     }
-
+    
     private boolean authorize(MultiMap headers) {
         try {
             String receive = headers.get("Authorization");
             long   minute  = (System.currentTimeMillis() / 60_000) * 60_000;
-            String expect  = "Basic " + Base64.getEncoder().encodeToString((username + ":" + Util.calcPass(password, minute)).getBytes());
+            String expect = "Basic " + Base64.getEncoder()
+                                             .encodeToString((username + ":" + Util.calcPass(password, minute))
+                                                     .getBytes());
             return expect.equals(receive);
         } catch (Exception e) {
             logger.error("授权失败", e);
         }
         return false;
     }
-
+    
     private Promise<NetSocket> socks5Handler(Buffer buffer) {
         if (!buffer.getBuffer(0, tcp.length()).equals(tcp)) {
             throw new IllegalStateException("expected " + toHex(tcp) + ", got " + toHex(buffer));
@@ -115,7 +117,8 @@ public class WebsoxServer extends AbstractVerticle {
             if (buffer.length() != 10) {
                 throw new IllegalStateException("format error in client request (attribute type ipv4), got " + toHex(buffer));
             }
-            host = buffer.getUnsignedByte(4) + "." + buffer.getUnsignedByte(5) + "." + buffer.getUnsignedByte(6) + "." + buffer.getUnsignedByte(7);
+            host = buffer.getUnsignedByte(4) + "." + buffer.getUnsignedByte(5) + "." + buffer
+                    .getUnsignedByte(6) + "." + buffer.getUnsignedByte(7);
             port = buffer.getUnsignedShort(8);
         } else if (addressType == 3) {
             int stringLen = buffer.getUnsignedByte(4);
@@ -130,12 +133,14 @@ public class WebsoxServer extends AbstractVerticle {
         }
         logger.debug("got request: " + toHex(buffer));
         logger.debug("connect: " + host + ":" + port);
-        NetClient          netClient = vertx.createNetClient(new NetClientOptions().setTcpKeepAlive(true).setReusePort(true).setTcpQuickAck(true).setIdleTimeout(15));
-        Promise<NetSocket> promise   = Promise.promise();
+        NetClient netClient = vertx
+                .createNetClient(new NetClientOptions().setTcpKeepAlive(true).setReusePort(true).setTcpQuickAck(true)
+                                                       .setIdleTimeout(15));
+        Promise<NetSocket> promise = Promise.promise();
         netClient.connect(port, host, promise);
         return promise;
     }
-
+    
     private String toHex(Buffer buffer) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < buffer.length(); i++) {
@@ -143,5 +148,5 @@ public class WebsoxServer extends AbstractVerticle {
         }
         return sb.toString();
     }
-
+    
 }

@@ -48,11 +48,11 @@ shadowJar {
     archiveVersion = ''
     manifest {
         attributes 'Main-Class': 'io.vertx.core.Launcher'
-        attributes 'Main-Verticle': 'org.rainday.WebsoxServer'
+        attributes 'Main-Verticle': 'org.rainday.HelloVerticle'
     }
     mergeServiceFiles {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
     }
 }
 compileJava.dependsOn(clean)
-shadowJar.mustRunAfter clean
+
