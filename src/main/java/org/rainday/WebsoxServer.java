@@ -6,7 +6,7 @@ import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetClient;
@@ -15,8 +15,6 @@ import io.vertx.core.net.NetSocket;
 import io.vertx.core.streams.Pump;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by admin on 2019/10/29 9:17:57.
@@ -29,36 +27,20 @@ public class WebsoxServer extends AbstractVerticle {
     private Buffer connectResponse = Buffer.buffer(new byte[]{5, 0, 0, 1, 0x7f, 0, 0, 1, 0x27, 0x10});
     private Buffer errorResponse   = Buffer.buffer(new byte[]{5, 4, 0, 1, 0, 0, 0, 0, 0, 0});
     
-    private String username = "rainday";
-    private String password = "raindayy";
-    private static Map config = new HashMap();
+    private String DEFAULT_USERNAME = "rainday";
+    private String DEFAULT_PASSWORD = "raindayy";
+    
+    private        String username;
+    private        String password;
     
     @Override
     public void start() throws Exception {
         //只有PORT JAVA_OPTS等个别由dynos提供的变量可以使用system.getenv获取
+        //Config Vars中配置的值也使用过system.getenv获取，而不是system.property
         //read http.port from system.property
-        int port = Integer.getInteger("http.port");
-    
-        try {
-            config.put("a", String.format("sout: username: %s, password: %s, port: %d", username, password, port));
-            config.put("configfun", config());
-            config.put("b", String.format("sout: username: %s, password: %s, port: %d", username, password, port));
-            config.put("c", System.getenv("PORT"));
-            config.put("d", System.getProperty("PORT"));
-            config.put("kokoda", System.getProperty("KOKODA"));
-            config.put("kokodaenv", System.getenv("KOKODA"));
-            config.put("koko", System.getProperty("KOKO"));
-    
-            username = config().getString("username", username);
-            password = config().getString("password", password);
-    
-    
-            System.out.println(String.format("sout: username: %s, password: %s, port: %d", username, password, port));
-            logger.info(String.format("logger: username: %s, password: %s, port: %d", username, password, port));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
+        int port = Integer.valueOf(System.getProperty("http.port"));
+        username = System.getenv().getOrDefault("username", DEFAULT_USERNAME);
+        password = System.getenv().getOrDefault("password", DEFAULT_PASSWORD);
         
         HttpServerOptions options = new HttpServerOptions().setWebsocketSubProtocols("protocol.loveyou3000.rainday.org")
                                                            .setPort(port);
@@ -67,7 +49,9 @@ public class WebsoxServer extends AbstractVerticle {
             if (x.path().equals("/")) {
                 x.response().end("<html><body> hello world </body></html>");
             } else {
-                x.response().end(Json.encodePrettily(config));
+                JsonObject json = new JsonObject().put("username", username).put("password", password)
+                                                  .put("port", port);
+                x.response().end(json.encodePrettily());
             }
         });
         websocketServer.websocketHandler(serverWebSocket -> {
